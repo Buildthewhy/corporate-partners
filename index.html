@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corporate Partners</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #1a1a2e; }
+
+/* NAV */
+.nav { background: #0d1b3e; padding: 0 24px; display: flex; align-items: center; height: 56px; gap: 32px; position: sticky; top:0; z-index:50; }
+.nav-brand { color: #F7A900; font-size: 17px; font-weight: 900; letter-spacing: 0.5px; white-space: nowrap; }
+.nav-tabs { display: flex; gap: 4px; }
+.nav-tab { color: #8ab0d8; font-size: 13px; font-weight: 600; padding: 6px 16px; border-radius: 6px; cursor: pointer; border: none; background: none; }
+.nav-tab:hover { color: #fff; background: rgba(255,255,255,0.08); }
+.nav-tab.active { color: #F7A900; background: rgba(247,169,0,0.12); }
+.nav-right { margin-left: auto; display:flex; gap:8px; align-items:center; }
+.btn-add { background: #F7A900; color: #0d1b3e; font-size: 13px; font-weight: 800; padding: 7px 16px; border-radius: 7px; border: none; cursor: pointer; }
+.btn-add:hover { background: #e8a000; }
+
+/* VIEWS */
+.view { display: none; padding: 24px; }
+.view.active { display: block; }
+
+/* DASHBOARD */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: #fff; border-radius: 12px; padding: 20px 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); border-top: 3px solid #e2e8f0; }
+.stat-card.gold { border-top-color: #F7A900; }
+.stat-card.green { border-top-color: #16a34a; }
+.stat-card .sn { font-size: 38px; font-weight: 900; color: #0d1b3e; line-height:1; }
+.stat-card.gold .sn { color: #c87f00; }
+.stat-card.green .sn { color: #16a34a; }
+.stat-card .sl { font-size: 11px; color: #6b7280; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.8px; font-weight:600; }
+.recent-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+.dash-panel { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+.dash-panel h3 { font-size: 11px; font-weight: 800; color: #0d1b3e; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 2px solid #F7A900; }
+
+/* PIPELINE */
+.pipeline-wrap { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 16px; min-height: calc(100vh - 130px); align-items: flex-start; }
+.pipeline-col { min-width: 210px; width: 210px; background: #e8ecf2; border-radius: 12px; padding: 12px; flex-shrink: 0; }
+.col-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid rgba(0,0,0,0.06); }
+.col-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; }
+.col-count { background: #fff; color: #6b7280; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+.col-cards { min-height: 60px; }
+.company-card { background: #fff; border-radius: 8px; padding: 11px 12px; margin-bottom: 8px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-left: 4px solid #e2e8f0; transition: box-shadow 0.15s, transform 0.1s; }
+.company-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.13); transform: translateY(-1px); }
+.company-card.dragging { opacity: 0.35; }
+.pipeline-col.drag-over { background: rgba(247,169,0,0.08); outline: 2px dashed #F7A900; outline-offset: -4px; }
+.card-name { font-size: 13px; font-weight: 700; color: #0d1b3e; margin-bottom: 3px; line-height:1.3; }
+.card-meta { font-size: 11px; color: #6b7280; line-height:1.4; }
+.card-tags { display: flex; gap: 4px; margin-top: 7px; flex-wrap: wrap; }
+.tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+.tag-gov { background: #dbeafe; color: #1d4ed8; }
+.tag-priv { background: #f3f4f6; color: #374151; }
+.tag-t1 { background: #fef3c7; color: #92400e; }
+.tag-t2 { background: #e0f2fe; color: #0369a1; }
+.tag-t3 { background: #f1f5f9; color: #475569; }
+
+/* Stage accent colors */
+[data-stage="prospect"] .company-card { border-left-color: #94a3b8; }
+[data-stage="contacted"] .company-card { border-left-color: #3b82f6; }
+[data-stage="replied"] .company-card { border-left-color: #8b5cf6; }
+[data-stage="meeting_booked"] .company-card { border-left-color: #F7A900; }
+[data-stage="partner"] .company-card { border-left-color: #16a34a; }
+[data-stage="not_interested"] .company-card { border-left-color: #ef4444; }
+[data-stage="cold"] .company-card { border-left-color: #9ca3af; }
+
+/* COMPANIES TABLE */
+.table-toolbar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap:wrap; }
+.search-input { flex: 1; min-width: 200px; padding: 9px 14px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; background:#fff; }
+.search-input:focus { outline: none; border-color: #F7A900; }
+.filter-select { padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; background: #fff; min-width:130px; }
+.filter-select:focus { outline: none; border-color: #F7A900; }
+.table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); overflow: hidden; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: #0d1b3e; color: #a0b4d0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 16px; text-align: left; cursor:pointer; user-select:none; }
+thead th:hover { color:#F7A900; }
+tbody tr { border-bottom: 1px solid #f1f5f9; cursor: pointer; transition:background 0.1s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background: #fafbff; }
+tbody td { padding: 11px 16px; font-size: 13px; }
+.stage-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: inline-block; white-space:nowrap; }
+.badge-prospect { background: #f1f5f9; color: #475569; }
+.badge-contacted { background: #dbeafe; color: #1d4ed8; }
+.badge-replied { background: #ede9fe; color: #6d28d9; }
+.badge-meeting_booked { background: #fef3c7; color: #92400e; }
+.badge-partner { background: #dcfce7; color: #16a34a; }
+.badge-not_interested { background: #fee2e2; color: #dc2626; }
+.badge-cold { background: #f3f4f6; color: #6b7280; }
+
+/* DETAIL PANEL */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; }
+.overlay.open { display: block; }
+.detail-panel { position: fixed; right: 0; top: 0; bottom: 0; width: 460px; background: #fff; z-index: 101; overflow-y: auto; box-shadow: -6px 0 30px rgba(0,0,0,0.15); transform: translateX(100%); transition: transform 0.25s cubic-bezier(0.4,0,0.2,1); }
+.detail-panel.open { transform: translateX(0); }
+.panel-header { background: #0d1b3e; padding: 20px 24px 16px; position: sticky; top: 0; z-index: 10; }
+.panel-close { position: absolute; top: 16px; right: 18px; background: rgba(255,255,255,0.1); border: none; color: #8ab0d8; font-size: 15px; cursor: pointer; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; }
+.panel-close:hover { color:#fff; background:rgba(255,255,255,0.2); }
+.panel-name { color: #fff; font-size: 19px; font-weight: 800; padding-right: 36px; line-height:1.3; }
+.panel-meta { color: #8ab0d8; font-size: 12px; margin-top:4px; }
+.panel-stage-row { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.stage-btn { font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1.5px solid rgba(255,255,255,0.15); color: #8ab0d8; background: none; cursor: pointer; transition:all 0.15s; white-space:nowrap; }
+.stage-btn:hover { border-color: #F7A900; color: #F7A900; }
+.stage-btn.active-stage { border-color: #F7A900; color: #F7A900; background: rgba(247,169,0,0.1); }
+.panel-body { padding: 16px 20px 32px; }
+.section-hdr { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #9ca3af; margin: 18px 0 10px; display: flex; justify-content: space-between; align-items: center; }
+.btn-sm { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; border: 1.5px solid #e2e8f0; background: #fff; cursor: pointer; color: #374151; transition:all 0.1s; }
+.btn-sm:hover { border-color: #F7A900; color: #0d1b3e; background:#fffbf0; }
+.contact-card { background: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 8px; border:1px solid #e8ecf2; }
+.contact-name { font-size: 13px; font-weight: 700; color: #0d1b3e; }
+.contact-role { font-size: 12px; color: #6b7280; margin-top:2px; }
+.contact-links { display: flex; gap: 10px; margin-top: 7px; flex-wrap:wrap; }
+.contact-link { font-size: 11px; color: #3b82f6; text-decoration: none; font-weight:600; }
+.contact-link:hover { text-decoration:underline; }
+.activity-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid #f1f5f9; }
+.activity-item:last-child { border-bottom:none; }
+.act-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; background: #f3f4f6; }
+.act-body { flex: 1; min-width:0; }
+.act-subject { font-size: 13px; font-weight: 600; color: #1a1a2e; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.act-note-body { font-size: 12px; color: #6b7280; margin-top:2px; white-space:pre-wrap; }
+.act-date { font-size: 11px; color: #9ca3af; margin-top:2px; }
+.notes-area { width: 100%; min-height: 90px; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: inherit; resize: vertical; }
+.notes-area:focus { outline: none; border-color: #F7A900; }
+
+/* MODALS */
+.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200; align-items: center; justify-content: center; }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 14px; padding: 28px; width: 500px; max-width: 94vw; box-shadow: 0 20px 60px rgba(0,0,0,0.25); max-height: 90vh; overflow-y: auto; }
+.modal h2 { font-size: 18px; font-weight: 800; color: #0d1b3e; margin-bottom: 20px; }
+.form-row { margin-bottom: 13px; }
+.form-row label { display: block; font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 5px; }
+.form-row input, .form-row select, .form-row textarea { width: 100%; padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-family: inherit; background:#fff; }
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; border-color: #F7A900; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 22px; }
+.btn-cancel { padding: 9px 18px; border: 1.5px solid #e2e8f0; border-radius: 8px; background: #fff; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn-cancel:hover { background:#f9fafb; }
+.btn-save { padding: 9px 22px; border: none; border-radius: 8px; background: #F7A900; color: #0d1b3e; font-size: 13px; font-weight: 800; cursor: pointer; }
+.btn-save:hover { background: #e8a000; }
+
+/* UTILS */
+.empty { text-align: center; padding: 28px 20px; color: #9ca3af; font-size: 13px; }
+.loading { text-align: center; padding: 36px; color: #6b7280; font-size: 14px; }
+.error-banner { background:#fee2e2; color:#dc2626; padding:12px 20px; font-size:13px; border-radius:8px; margin-bottom:16px; }
+</style>
+</head>
+<body>
+<script>
+(function(){
+  var pw = localStorage.getItem('crm_auth');
+  if(pw !== 'OTR2026') {
+    var entered = prompt('Corporate Partners CRM â Enter password:');
+    if(entered !== 'OTR2026') { document.body.innerHTML='<div style="text-align:center;padding:80px;font-family:sans-serif;color:#6b7280">Access denied.</div>'; return; }
+    localStorage.setItem('crm_auth', entered);
+  }
+})();
+</script>
+
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">OTR // Corporate Partners</div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchView('dashboard',this)">ð Dashboard</button>
+    <button class="nav-tab" onclick="switchView('pipeline',this)">ð Pipeline</button>
+    <button class="nav-tab" onclick="switchView('companies',this)">ð¢ Companies</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-add" onclick="openAddCompany()">+ Add Company</button>
+  </div>
+</nav>
+
+<!-- ââ DASHBOARD ââ -->
+<div class="view active" id="view-dashboard">
+  <div class="stats-grid">
+    <div class="stat-card"><div class="sn" id="stat-total">â</div><div class="sl">Total Prospects</div></div>
+    <div class="stat-card gold"><div class="sn" id="stat-active">â</div><div class="sl">In Active Outreach</div></div>
+    <div class="stat-card gold"><div class="sn" id="stat-meetings">â</div><div class="sl">Meetings Booked</div></div>
+    <div class="stat-card green"><div class="sn" id="stat-partners">â</div><div class="sl">Partners Closed</div></div>
+  </div>
+  <div class="recent-grid">
+    <div class="dash-panel">
+      <h3>Recently Updated</h3>
+      <div id="recent-companies"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ââ PIPELINE ââ -->
+<div class="view" id="view-pipeline">
+  <div class="pipeline-wrap" id="pipeline-board">
+    <div class="loading">Loading pipeline...</div>
+  </div>
+</div>
+
+<!-- ââ COMPANIES ââ -->
+<div class="view" id="view-companies">
+  <div class="table-toolbar">
+    <input class="search-input" id="search-input" placeholder="ð  Search companies, industries..." oninput="renderCompanyTable()">
+    <select class="filter-select" id="filter-stage" onchange="renderCompanyTable()">
+      <option value="">All Stages</option>
+      <option value="prospect">Prospect</option>
+      <option value="contacted">Contacted</option>
+      <option value="replied">Replied</option>
+      <option value="meeting_booked">Meeting Booked</option>
+      <option value="partner">Partner â</option>
+      <option value="not_interested">Not Interested</option>
+      <option value="cold">Cold</option>
+    </select>
+    <select class="filter-select" id="filter-sector" onchange="renderCompanyTable()">
+      <option value="">All Sectors</option>
+      <option value="private">Private</option>
+      <option value="government">Government</option>
+    </select>
+    <select class="filter-select" id="filter-city" onchange="renderCompanyTable()">
+      <option value="">All Cities</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortTable('name')">Company â</th>
+          <th onclick="sortTable('industry')">Industry â</th>
+          <th>City</th>
+          <th onclick="sortTable('estimated_employees')">Employees â</th>
+          <th onclick="sortTable('stage')">Stage â</th>
+          <th>Sector</th>
+          <th>Tier</th>
+        </tr>
+      </thead>
+      <tbody id="companies-tbody">
+        <tr><td colspan="7" class="loading">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ââ DETAIL PANEL ââ -->
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="panel-header">
+    <button class="panel-close" onclick="closeDetail()">â</button>
+    <div class="panel-name" id="dp-name">â</div>
+    <div class="panel-meta" id="dp-meta">â</div>
+    <div class="panel-stage-row" id="dp-stages"></div>
+  </div>
+  <div class="panel-body">
+    <div class="section-hdr">Contacts <button class="btn-sm" onclick="openAddContact()">+ Add</button></div>
+    <div id="dp-contacts"></div>
+
+    <div class="section-hdr">Notes</div>
+    <textarea class="notes-area" id="dp-notes" placeholder="Add notes about this company..." onblur="saveNotes()"></textarea>
+
+    <div class="section-hdr">Activity Log <button class="btn-sm" onclick="openLogActivity()">+ Log</button></div>
+    <div id="dp-activities"></div>
+
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid #f1f5f9">
+      <button onclick="deleteCompany()" style="font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;">ð Delete this company</button>
+    </div>
+  </div>
+</div>
+
+<!-- ââ MODAL: ADD COMPANY ââ -->
+<div class="modal-overlay" id="modal-company">
+  <div class="modal">
+    <h2>Add Company</h2>
+    <div class="form-row"><label>Company Name *</label><input id="fc-name" placeholder="e.g. NV Energy"></div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Industry</label><input id="fc-industry" placeholder="e.g. Utilities"></div>
+      <div class="form-row"><label>Sector</label>
+        <select id="fc-sector"><option value="private">Private</option><option value="government">Government / Municipal</option></select>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>City</label><input id="fc-city" value="Las Vegas"></div>
+      <div class="form-row"><label>State</label><input id="fc-state" value="NV"></div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Website</label><input id="fc-website" placeholder="nvenergy.com"></div>
+      <div class="form-row"><label>Phone</label><input id="fc-phone" placeholder="702-xxx-xxxx"></div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Est. Employees</label><input id="fc-employees" type="number" placeholder="500"></div>
+      <div class="form-row"><label>Tier</label>
+        <select id="fc-tier">
+          <option value="">â Select â</option>
+          <option value="T1">T1 â High Priority</option>
+          <option value="T2">T2 â Medium</option>
+          <option value="T3">T3 â Lower</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row"><label>Stage</label>
+      <select id="fc-stage">
+        <option value="prospect">Prospect</option>
+        <option value="contacted">Contacted</option>
+        <option value="replied">Replied</option>
+        <option value="meeting_booked">Meeting Booked</option>
+        <option value="partner">Partner â</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-company')">Cancel</button>
+      <button class="btn-save" onclick="saveCompany()">Add Company</button>
+    </div>
+  </div>
+</div>
+
+<!-- ââ MODAL: ADD CONTACT ââ -->
+<div class="modal-overlay" id="modal-contact">
+  <div class="modal">
+    <h2>Add Contact</h2>
+    <div class="form-grid-2">
+      <div class="form-row"><label>First Name</label><input id="cc-first" placeholder="First"></div>
+      <div class="form-row"><label>Last Name</label><input id="cc-last" placeholder="Last"></div>
+    </div>
+    <div class="form-row"><label>Title</label><input id="cc-title" placeholder="e.g. Fleet Manager, HR Director"></div>
+    <div class="form-grid-2">
+      <div class="form-row"><label>Email</label><input id="cc-email" type="email" placeholder="name@company.com"></div>
+      <div class="form-row"><label>Phone</label><input id="cc-phone" placeholder="702-xxx-xxxx"></div>
+    </div>
+    <div class="form-row"><label>LinkedIn URL</label><input id="cc-linkedin" placeholder="linkedin.com/in/..."></div>
+    <div class="form-row">
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;letter-spacing:0">
+        <input type="checkbox" id="cc-primary" style="width:auto"> Primary contact for this company
+      </label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-contact')">Cancel</button>
+      <button class="btn-save" onclick="saveContact()">Add Contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- ââ MODAL: LOG ACTIVITY ââ -->
+<div class="modal-overlay" id="modal-activity">
+  <div class="modal">
+    <h2>Log Activity</h2>
+    <div class="form-row"><label>Type</label>
+      <select id="la-type">
+        <option value="email">ð§ Email Sent</option>
+        <option value="reply">â©ï¸ Reply Received</option>
+        <option value="call">ð Call</option>
+        <option value="meeting">ð¤ Meeting</option>
+        <option value="linkedin">ð¼ LinkedIn</option>
+        <option value="note">ð Note</option>
+      </select>
+    </div>
+    <div class="form-row"><label>Subject / Title</label><input id="la-subject" placeholder="e.g. Initial outreach email sent"></div>
+    <div class="form-row"><label>Notes</label><textarea id="la-body" rows="3" placeholder="What happened? Any follow-up needed?"></textarea></div>
+    <div class="form-row"><label>Date & Time</label><input type="datetime-local" id="la-date"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-activity')">Cancel</button>
+      <button class="btn-save" onclick="saveActivity()">Log Activity</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://owgukrgvaaenrnjacerq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93Z3Vrcmd2YWFlbnJub2FjZXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTY1MTEsImV4cCI6MjA4OTM3MjUxMX0.IYIh5WNJjAEAEUcATc7XROqV7FtwINe3RU2hOpzog-k';
+
+const STAGES = [
+  { key:'prospect',        label:'Prospect',        color:'#94a3b8' },
+  { key:'contacted',       label:'Contacted',       color:'#3b82f6' },
+  { key:'replied',         label:'Replied',         color:'#8b5cf6' },
+  { key:'meeting_booked',  label:'Meeting Booked',  color:'#F7A900' },
+  { key:'partner',         label:'Partner â',       color:'#16a34a' },
+  { key:'not_interested',  label:'Not Interested',  color:'#ef4444' },
+  { key:'cold',            label:'Cold (30d)',       color:'#9ca3af' },
+];
+
+const ACT_ICONS = {
+  email:'ð§', reply:'â©ï¸', call:'ð', meeting:'ð¤', linkedin:'ð¼', note:'ð'
+};
+
+// ââ STATE ââ
+let allCompanies = [];
+let currentCompanyId = null;
+let sortField = 'updated_at';
+let sortAsc = false;
+
+// ââ API ââ
+async function api(method, path, body=null) {
+  const opts = {
+    method,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=minimal'
+    }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1' + path, opts);
+    if (res.status === 204 || res.status === 200 && method === 'PATCH') return null;
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  } catch(e) {
+    console.error('API error:', e);
+    return null;
+  }
+}
+
+// ââ LOAD ALL DATA ââ
+async function loadCompanies() {
+  const data = await api('GET', '/companies?select=*,contacts(*)&order=updated_at.desc');
+  allCompanies = data || [];
+  renderDashboard();
+  renderPipeline();
+  renderCompanyTable();
+  populateCityFilter();
+}
+
+// ââ DASHBOARD ââ
+function renderDashboard() {
+  const total = allCompanies.length;
+  const active = allCompanies.filter(c => ['contacted','replied','meeting_booked'].includes(c.stage)).length;
+  const meetings = allCompanies.filter(c => c.stage === 'meeting_booked').length;
+  const partners = allCompanies.filter(c => c.stage === 'partner').length;
+
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-active').textContent = active;
+  document.getElementById('stat-meetings').textContent = meetings;
+  document.getElementById('stat-partners').textContent = partners;
+
+  // Recent companies list
+  const recent = allCompanies.slice(0, 10);
+  document.getElementById('recent-companies').innerHTML = recent.length
+    ? recent.map(c => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer" onclick="openDetail('${c.id}')">
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#0d1b3e">${c.name}</div>
+            <div style="font-size:11px;color:#9ca3af;margin-top:1px">${c.industry||'â'} Â· ${c.city||'Las Vegas'}</div>
+          </div>
+          <span class="stage-badge badge-${c.stage}">${STAGES.find(s=>s.key===c.stage)?.label||c.stage}</span>
+        </div>`).join('')
+    : '<div class="empty">No companies yet. Add your first prospect!</div>';
+
+}
+
+// ââ PIPELINE KANBAN ââ
+function renderPipeline() {
+  const board = document.getElementById('pipeline-board');
+  board.innerHTML = STAGES.map(s => {
+    const cards = allCompanies.filter(c => c.stage === s.key);
+    return `
+      <div class="pipeline-col" data-stage="${s.key}"
+        ondragover="onDragOver(event,this)" ondrop="onDrop(event,this)" ondragleave="onDragLeave(event,this)">
+        <div class="col-header">
+          <span class="col-title" style="color:${s.color}">${s.label}</span>
+          <span class="col-count">${cards.length}</span>
+        </div>
+        <div class="col-cards">
+          ${cards.map(c => companyCardHTML(c)).join('')}
+          ${cards.length === 0 ? `<div style="text-align:center;padding:20px 0;color:#c3cfe2;font-size:12px">Drop here</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function companyCardHTML(c) {
+  const contacts = c.contacts || [];
+  const primary = contacts.find(ct => ct.is_primary) || contacts[0];
+  return `
+    <div class="company-card" draggable="true" data-id="${c.id}"
+      onclick="openDetail('${c.id}')"
+      ondragstart="onDragStart(event,'${c.id}')">
+      <div class="card-name">${c.name}</div>
+      <div class="card-meta">${c.city||'Las Vegas'} Â· ${c.estimated_employees ? c.estimated_employees.toLocaleString()+' emp' : 'â'}</div>
+      ${primary ? `<div class="card-meta" style="margin-top:3px">ð¤ ${primary.first_name||''} ${primary.last_name||''}</div>` : ''}
+      <div class="card-tags">
+        <span class="tag ${c.sector==='government'?'tag-gov':'tag-priv'}">${c.sector==='government'?'GOV':'PRIV'}</span>
+        ${c.tier ? `<span class="tag tag-${c.tier.toLowerCase()}">${c.tier}</span>` : ''}
+      </div>
+    </div>`;
+}
+
+// ââ DRAG & DROP ââ
+let dragId = null;
+function onDragStart(e, id) {
+  dragId = id;
+  setTimeout(() => { const el = document.querySelector(`[data-id="${id}"]`); if(el) el.classList.add('dragging'); }, 10);
+}
+function onDragOver(e, col) { e.preventDefault(); col.classList.add('drag-over'); }
+function onDragLeave(e, col) { col.classList.remove('drag-over'); }
+async function onDrop(e, col) {
+  e.preventDefault();
+  col.classList.remove('drag-over');
+  const newStage = col.dataset.stage;
+  if (!dragId || !newStage) return;
+  const card = document.querySelector(`[data-id="${dragId}"]`);
+  if (card) card.classList.remove('dragging');
+  await api('PATCH', `/companies?id=eq.${dragId}`, { stage: newStage });
+  dragId = null;
+  await loadCompanies();
+}
+
+// ââ COMPANIES TABLE ââ
+function renderCompanyTable() {
+  const search = (document.getElementById('search-input').value || '').toLowerCase();
+  const stageF = document.getElementById('filter-stage').value;
+  const sectorF = document.getElementById('filter-sector').value;
+  const cityF = document.getElementById('filter-city').value;
+
+  let filtered = allCompanies.filter(c => {
+    const s = search;
+    return (!s || c.name.toLowerCase().includes(s) || (c.industry||'').toLowerCase().includes(s) || (c.city||'').toLowerCase().includes(s))
+      && (!stageF || c.stage === stageF)
+      && (!sectorF || c.sector === sectorF)
+      && (!cityF || c.city === cityF);
+  });
+
+  // Sort
+  filtered.sort((a, b) => {
+    let av = a[sortField] ?? '', bv = b[sortField] ?? '';
+    if (typeof av === 'number') return sortAsc ? av - bv : bv - av;
+    return sortAsc ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+  });
+
+  const tbody = document.getElementById('companies-tbody');
+  tbody.innerHTML = filtered.length ? filtered.map(c => `
+    <tr onclick="openDetail('${c.id}')">
+      <td>
+        <div style="font-weight:700;color:#0d1b3e">${c.name}</div>
+        ${c.website ? `<div style="font-size:11px;color:#3b82f6">${c.website}</div>` : ''}
+      </td>
+      <td style="color:#374151">${c.industry||'â'}</td>
+      <td>${c.city||'â'}, ${c.state||'NV'}</td>
+      <td>${c.estimated_employees ? c.estimated_employees.toLocaleString() : 'â'}</td>
+      <td><span class="stage-badge badge-${c.stage}">${STAGES.find(s=>s.key===c.stage)?.label||c.stage}</span></td>
+      <td><span class="tag ${c.sector==='government'?'tag-gov':'tag-priv'}">${c.sector==='government'?'Government':'Private'}</span></td>
+      <td style="font-weight:600">${c.tier||'â'}</td>
+    </tr>`).join('')
+    : `<tr><td colspan="7" class="empty">No companies match your filters.</td></tr>`;
+}
+
+function sortTable(field) {
+  if (sortField === field) sortAsc = !sortAsc;
+  else { sortField = field; sortAsc = true; }
+  renderCompanyTable();
+}
+
+function populateCityFilter() {
+  const cities = [...new Set(allCompanies.map(c => c.city).filter(Boolean))].sort();
+  const sel = document.getElementById('filter-city');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">All Cities</option>' + cities.map(c => `<option value="${c}" ${c===cur?'selected':''}>${c}</option>`).join('');
+}
+
+// ââ DETAIL PANEL ââ
+async function openDetail(id) {
+  currentCompanyId = id;
+  const company = allCompanies.find(c => c.id === id);
+  if (!company) return;
+
+  document.getElementById('dp-name').textContent = company.name;
+  document.getElementById('dp-meta').textContent =
+    `${company.industry||'â'} Â· ${company.city||'Las Vegas'}, ${company.state||'NV'} Â· ${company.estimated_employees ? company.estimated_employees.toLocaleString()+' employees' : 'â'}`;
+  document.getElementById('dp-notes').value = company.notes || '';
+
+  // Stage selector buttons
+  document.getElementById('dp-stages').innerHTML = STAGES.map(s =>
+    `<button class="stage-btn ${company.stage===s.key?'active-stage':''}" onclick="updateStage('${id}','${s.key}')">${s.label}</button>`
+  ).join('');
+
+  // Contacts
+  const contacts = company.contacts || [];
+  document.getElementById('dp-contacts').innerHTML = contacts.length
+    ? contacts.map(ct => `
+        <div class="contact-card">
+          <div class="contact-name">${ct.first_name||''} ${ct.last_name||''}${ct.is_primary?' â­':''}</div>
+          <div class="contact-role">${ct.title||'â'}</div>
+          <div class="contact-links">
+            ${ct.email ? `<a class="contact-link" href="mailto:${ct.email}">ð§ ${ct.email}</a>` : ''}
+            ${ct.phone ? `<a class="contact-link" href="tel:${ct.phone}">ð ${ct.phone}</a>` : ''}
+            ${ct.linkedin_url ? `<a class="contact-link" href="${ct.linkedin_url.startsWith('http')?ct.linkedin_url:'https://'+ct.linkedin_url}" target="_blank">ð¼ LinkedIn</a>` : ''}
+          </div>
+        </div>`).join('')
+    : '<div class="empty">No contacts yet.</div>';
+
+  // Activities
+  const acts = await api('GET', `/activities?company_id=eq.${id}&order=occurred_at.desc&limit=25`);
+  document.getElementById('dp-activities').innerHTML = (acts||[]).length
+    ? (acts||[]).map(a => `
+        <div class="activity-item">
+          <div class="act-icon">${ACT_ICONS[a.type]||'ð'}</div>
+          <div class="act-body">
+            <div class="act-subject">${a.subject || a.type.replace(/_/g,' ')}</div>
+            ${a.body ? `<div class="act-note-body">${a.body}</div>` : ''}
+            <div class="act-date">${new Date(a.occurred_at||a.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+          </div>
+        </div>`).join('')
+    : '<div class="empty">No activity logged yet.</div>';
+
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open');
+  currentCompanyId = null;
+}
+
+async function updateStage(id, stage) {
+  await api('PATCH', `/companies?id=eq.${id}`, { stage });
+  const co = allCompanies.find(c => c.id === id);
+  if (co) co.stage = stage;
+  renderDashboard();
+  renderPipeline();
+  renderCompanyTable();
+  openDetail(id); // refresh panel
+}
+
+async function saveNotes() {
+  if (!currentCompanyId) return;
+  const notes = document.getElementById('dp-notes').value;
+  await api('PATCH', `/companies?id=eq.${currentCompanyId}`, { notes });
+  const co = allCompanies.find(c => c.id === currentCompanyId);
+  if (co) co.notes = notes;
+}
+
+async function deleteCompany() {
+  if (!currentCompanyId) return;
+  const co = allCompanies.find(c => c.id === currentCompanyId);
+  if (!confirm(`Delete "${co?.name}"? This cannot be undone.`)) return;
+  await api('DELETE', `/companies?id=eq.${currentCompanyId}`);
+  closeDetail();
+  await loadCompanies();
+}
+
+// ââ MODALS ââ
+function openAddCompany() { document.getElementById('modal-company').classList.add('open'); }
+function openAddContact() { document.getElementById('modal-contact').classList.add('open'); }
+function openLogActivity() {
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  document.getElementById('la-date').value = now.toISOString().slice(0,16);
+  document.getElementById('modal-activity').classList.add('open');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+async function saveCompany() {
+  const name = document.getElementById('fc-name').value.trim();
+  if (!name) { alert('Company name is required.'); return; }
+  const company = {
+    name,
+    industry: document.getElementById('fc-industry').value.trim() || null,
+    sector: document.getElementById('fc-sector').value,
+    city: document.getElementById('fc-city').value.trim() || 'Las Vegas',
+    state: document.getElementById('fc-state').value.trim() || 'NV',
+    website: document.getElementById('fc-website').value.trim() || null,
+    phone: document.getElementById('fc-phone').value.trim() || null,
+    estimated_employees: parseInt(document.getElementById('fc-employees').value) || null,
+    tier: document.getElementById('fc-tier').value || null,
+    stage: document.getElementById('fc-stage').value,
+  };
+  await api('POST', '/companies', company);
+  closeModal('modal-company');
+  // Reset form
+  ['fc-name','fc-industry','fc-website','fc-phone','fc-employees'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('fc-city').value='Las Vegas';
+  document.getElementById('fc-state').value='NV';
+  document.getElementById('fc-sector').value='private';
+  document.getElementById('fc-tier').value='';
+  document.getElementById('fc-stage').value='prospect';
+  await loadCompanies();
+}
+
+async function saveContact() {
+  if (!currentCompanyId) return;
+  const contact = {
+    company_id: currentCompanyId,
+    first_name: document.getElementById('cc-first').value.trim() || null,
+    last_name: document.getElementById('cc-last').value.trim() || null,
+    title: document.getElementById('cc-title').value.trim() || null,
+    email: document.getElementById('cc-email').value.trim() || null,
+    phone: document.getElementById('cc-phone').value.trim() || null,
+    linkedin_url: document.getElementById('cc-linkedin').value.trim() || null,
+    is_primary: document.getElementById('cc-primary').checked,
+  };
+  await api('POST', '/contacts', contact);
+  closeModal('modal-contact');
+  ['cc-first','cc-last','cc-title','cc-email','cc-phone','cc-linkedin'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('cc-primary').checked = false;
+  await loadCompanies();
+  openDetail(currentCompanyId);
+}
+
+async function saveActivity() {
+  if (!currentCompanyId) return;
+  const activity = {
+    company_id: currentCompanyId,
+    type: document.getElementById('la-type').value,
+    subject: document.getElementById('la-subject').value.trim() || null,
+    body: document.getElementById('la-body').value.trim() || null,
+    occurred_at: document.getElementById('la-date').value || new Date().toISOString(),
+  };
+  await api('POST', '/activities', activity);
+  closeModal('modal-activity');
+  ['la-subject','la-body'].forEach(id => document.getElementById(id).value='');
+  openDetail(currentCompanyId);
+}
+
+// ââ VIEW SWITCHING ââ
+function switchView(view, tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`view-${view}`).classList.add('active');
+  if (tab) tab.classList.add('active');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ââ BOOT ââ
+loadCompanies();
+</script>
+</body>
+</html>
