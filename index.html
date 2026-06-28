@@ -150,7 +150,7 @@ tbody td { padding: 11px 16px; font-size: 13px; }
 (function(){
   var pw = localStorage.getItem('crm_auth');
   if(pw !== 'OTR2026') {
-    var entered = prompt('Corporate Partners CRM â Enter password:');
+    var entered = prompt('Corporate Partners CRM — Enter password:');
     if(entered !== 'OTR2026') { document.body.innerHTML='<div style="text-align:center;padding:80px;font-family:sans-serif;color:#6b7280">Access denied.</div>'; return; }
     localStorage.setItem('crm_auth', entered);
   }
@@ -162,22 +162,22 @@ tbody td { padding: 11px 16px; font-size: 13px; }
 <nav class="nav">
   <div class="nav-brand">OTR // Corporate Partners</div>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchView('dashboard',this)">ð Dashboard</button>
-    <button class="nav-tab" onclick="switchView('pipeline',this)">ð Pipeline</button>
-    <button class="nav-tab" onclick="switchView('companies',this)">ð¢ Companies</button>
+    <button class="nav-tab active" onclick="switchView('dashboard',this)">📊 Dashboard</button>
+    <button class="nav-tab" onclick="switchView('pipeline',this)">🗂 Pipeline</button>
+    <button class="nav-tab" onclick="switchView('companies',this)">🏢 Companies</button>
   </div>
   <div class="nav-right">
     <button class="btn-add" onclick="openAddCompany()">+ Add Company</button>
   </div>
 </nav>
 
-<!-- ââ DASHBOARD ââ -->
+<!-- ── DASHBOARD ── -->
 <div class="view active" id="view-dashboard">
   <div class="stats-grid">
-    <div class="stat-card"><div class="sn" id="stat-total">â</div><div class="sl">Total Prospects</div></div>
-    <div class="stat-card gold"><div class="sn" id="stat-active">â</div><div class="sl">In Active Outreach</div></div>
-    <div class="stat-card gold"><div class="sn" id="stat-meetings">â</div><div class="sl">Meetings Booked</div></div>
-    <div class="stat-card green"><div class="sn" id="stat-partners">â</div><div class="sl">Partners Closed</div></div>
+    <div class="stat-card"><div class="sn" id="stat-total">—</div><div class="sl">Total Prospects</div></div>
+    <div class="stat-card gold"><div class="sn" id="stat-active">—</div><div class="sl">In Active Outreach</div></div>
+    <div class="stat-card gold"><div class="sn" id="stat-meetings">—</div><div class="sl">Meetings Booked</div></div>
+    <div class="stat-card green"><div class="sn" id="stat-partners">—</div><div class="sl">Partners Closed</div></div>
   </div>
   <div class="recent-grid">
     <div class="dash-panel">
@@ -187,24 +187,24 @@ tbody td { padding: 11px 16px; font-size: 13px; }
   </div>
 </div>
 
-<!-- ââ PIPELINE ââ -->
+<!-- ── PIPELINE ── -->
 <div class="view" id="view-pipeline">
   <div class="pipeline-wrap" id="pipeline-board">
     <div class="loading">Loading pipeline...</div>
   </div>
 </div>
 
-<!-- ââ COMPANIES ââ -->
+<!-- ── COMPANIES ── -->
 <div class="view" id="view-companies">
   <div class="table-toolbar">
-    <input class="search-input" id="search-input" placeholder="ð  Search companies, industries..." oninput="renderCompanyTable()">
+    <input class="search-input" id="search-input" placeholder="🔍  Search companies, industries..." oninput="renderCompanyTable()">
     <select class="filter-select" id="filter-stage" onchange="renderCompanyTable()">
       <option value="">All Stages</option>
       <option value="prospect">Prospect</option>
       <option value="contacted">Contacted</option>
       <option value="replied">Replied</option>
       <option value="meeting_booked">Meeting Booked</option>
-      <option value="partner">Partner â</option>
+      <option value="partner">Partner ✓</option>
       <option value="not_interested">Not Interested</option>
       <option value="cold">Cold</option>
     </select>
@@ -221,11 +221,11 @@ tbody td { padding: 11px 16px; font-size: 13px; }
     <table>
       <thead>
         <tr>
-          <th onclick="sortTable('name')">Company â</th>
-          <th onclick="sortTable('industry')">Industry â</th>
+          <th onclick="sortTable('name')">Company ₕ</th>
+          <th onclick="sortTable('industry')">Industry ↕</th>
           <th>City</th>
-          <th onclick="sortTable('estimated_employees')">Employees â</th>
-          <th onclick="sortTable('stage')">Stage â</th>
+          <th onclick="sortTable('estimated_employees')">Employees ↕</th>
+          <th onclick="sortTable('stage')">Stage ↕</th>
           <th>Sector</th>
           <th>Tier</th>
         </tr>
@@ -237,13 +237,13 @@ tbody td { padding: 11px 16px; font-size: 13px; }
   </div>
 </div>
 
-<!-- ââ DETAIL PANEL ââ -->
+<!-- ── DETAIL PANEL ── -->
 <div class="overlay" id="overlay" onclick="closeDetail()"></div>
 <div class="detail-panel" id="detail-panel">
   <div class="panel-header">
-    <button class="panel-close" onclick="closeDetail()">â</button>
-    <div class="panel-name" id="dp-name">â</div>
-    <div class="panel-meta" id="dp-meta">â</div>
+    <button class="panel-close" onclick="closeDetail()">✕</button>
+    <div class="panel-name" id="dp-name">—</div>
+    <div class="panel-meta" id="dp-meta">—</div>
     <div class="panel-stage-row" id="dp-stages"></div>
   </div>
   <div class="panel-body">
@@ -257,12 +257,12 @@ tbody td { padding: 11px 16px; font-size: 13px; }
     <div id="dp-activities"></div>
 
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid #f1f5f9">
-      <button onclick="deleteCompany()" style="font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;">ð Delete this company</button>
+      <button onclick="deleteCompany()" style="font-size:12px;color:#ef4444;background:none;border:none;cursor:pointer;font-weight:600;">🗑 Delete this company</button>
     </div>
   </div>
 </div>
 
-<!-- ââ MODAL: ADD COMPANY ââ -->
+<!-- ── MODAL: ADD COMPANY ── -->
 <div class="modal-overlay" id="modal-company">
   <div class="modal">
     <h2>Add Company</h2>
@@ -285,10 +285,10 @@ tbody td { padding: 11px 16px; font-size: 13px; }
       <div class="form-row"><label>Est. Employees</label><input id="fc-employees" type="number" placeholder="500"></div>
       <div class="form-row"><label>Tier</label>
         <select id="fc-tier">
-          <option value="">â Select â</option>
-          <option value="T1">T1 â High Priority</option>
-          <option value="T2">T2 â Medium</option>
-          <option value="T3">T3 â Lower</option>
+          <option value="">— Select —</option>
+          <option value="T1">T1 — High Priority</option>
+          <option value="T2">T2 — Medium</option>
+          <option value="T3">T3 — Lower</option>
         </select>
       </div>
     </div>
@@ -298,7 +298,7 @@ tbody td { padding: 11px 16px; font-size: 13px; }
         <option value="contacted">Contacted</option>
         <option value="replied">Replied</option>
         <option value="meeting_booked">Meeting Booked</option>
-        <option value="partner">Partner â</option>
+        <option value="partner">Partner ✓</option>
       </select>
     </div>
     <div class="modal-actions">
@@ -308,7 +308,7 @@ tbody td { padding: 11px 16px; font-size: 13px; }
   </div>
 </div>
 
-<!-- ââ MODAL: ADD CONTACT ââ -->
+<!-- ── MODAL: ADD CONTACT ── -->
 <div class="modal-overlay" id="modal-contact">
   <div class="modal">
     <h2>Add Contact</h2>
@@ -334,18 +334,18 @@ tbody td { padding: 11px 16px; font-size: 13px; }
   </div>
 </div>
 
-<!-- ââ MODAL: LOG ACTIVITY ââ -->
+<!-- ── MODAL: LOG ACTIVITY ── -->
 <div class="modal-overlay" id="modal-activity">
   <div class="modal">
     <h2>Log Activity</h2>
     <div class="form-row"><label>Type</label>
       <select id="la-type">
-        <option value="email">ð§ Email Sent</option>
-        <option value="reply">â©ï¸ Reply Received</option>
-        <option value="call">ð Call</option>
-        <option value="meeting">ð¤ Meeting</option>
-        <option value="linkedin">ð¼ LinkedIn</option>
-        <option value="note">ð Note</option>
+        <option value="email">📧 Email Sent</option>
+        <option value="reply">↩️ Reply Received</option>
+        <option value="call">📞 Call</option>
+        <option value="meeting">🤝 Meeting</option>
+        <option value="linkedin">💼 LinkedIn</option>
+        <option value="note">📝 Note</option>
       </select>
     </div>
     <div class="form-row"><label>Subject / Title</label><input id="la-subject" placeholder="e.g. Initial outreach email sent"></div>
@@ -360,29 +360,29 @@ tbody td { padding: 11px 16px; font-size: 13px; }
 
 <script>
 const SUPABASE_URL = 'https://owgukrgvaaenrnjacerq.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93Z3Vrcmd2YWFlbnJuamFjZXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTY1MTEsImV4cCI6MjA4OTM3MjUxMX0.IYIh5WNJjAEAEUcATc7XROqV7FtwINe3RU2hOpzog-k';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im93Z3Vkcmd2YWFlbnJuamFjZXJxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3OTY1MTEsImV4cCI6MjA4OTM3MjUxMX0.IYIh5WNJjAEAEUcATc7XROqV7FtwINe3RU2hOpzog-k';
 
 const STAGES = [
   { key:'prospect',        label:'Prospect',        color:'#94a3b8' },
   { key:'contacted',       label:'Contacted',       color:'#3b82f6' },
   { key:'replied',         label:'Replied',         color:'#8b5cf6' },
   { key:'meeting_booked',  label:'Meeting Booked',  color:'#F7A900' },
-  { key:'partner',         label:'Partner â',       color:'#16a34a' },
+  { key:'partner',         label:'Partner ✓',       color:'#16a34a' },
   { key:'not_interested',  label:'Not Interested',  color:'#ef4444' },
   { key:'cold',            label:'Cold (30d)',       color:'#9ca3af' },
 ];
 
 const ACT_ICONS = {
-  email:'ð§', reply:'â©ï¸', call:'ð', meeting:'ð¤', linkedin:'ð¼', note:'ð'
+  email:'📧', reply:'↩️', call:'📞', meeting:'🤝', linkedin:'💼', note:'📝'
 };
 
-// ââ STATE ââ
+// ── STATE ──
 let allCompanies = [];
 let currentCompanyId = null;
 let sortField = 'updated_at';
 let sortAsc = false;
 
-// ââ API ââ
+// ── API ──
 async function api(method, path, body=null) {
   const opts = {
     method,
@@ -405,7 +405,7 @@ async function api(method, path, body=null) {
   }
 }
 
-// ââ LOAD ALL DATA ââ
+// ── LOAD ALL DATA ──
 async function loadCompanies() {
   const data = await api('GET', '/companies?select=*,contacts(*)&order=updated_at.desc');
   allCompanies = data || [];
@@ -415,7 +415,7 @@ async function loadCompanies() {
   populateCityFilter();
 }
 
-// ââ DASHBOARD ââ
+// ── DASHBOARD ──
 function renderDashboard() {
   const total = allCompanies.length;
   const active = allCompanies.filter(c => ['contacted','replied','meeting_booked'].includes(c.stage)).length;
@@ -434,7 +434,7 @@ function renderDashboard() {
         <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer" onclick="openDetail('${c.id}')">
           <div>
             <div style="font-size:13px;font-weight:700;color:#0d1b3e">${c.name}</div>
-            <div style="font-size:11px;color:#9ca3af;margin-top:1px">${c.industry||'â'} Â· ${c.city||'Las Vegas'}</div>
+            <div style="font-size:11px;color:#9ca3af;margin-top:1px">${c.industry||'—'} · ${c.city||'Las Vegas'}</div>
           </div>
           <span class="stage-badge badge-${c.stage}">${STAGES.find(s=>s.key===c.stage)?.label||c.stage}</span>
         </div>`).join('')
@@ -442,7 +442,7 @@ function renderDashboard() {
 
 }
 
-// ââ PIPELINE KANBAN ââ
+// ── PIPELINE KANBAN ──
 function renderPipeline() {
   const board = document.getElementById('pipeline-board');
   board.innerHTML = STAGES.map(s => {
@@ -470,8 +470,8 @@ function companyCardHTML(c) {
       onclick="openDetail('${c.id}')"
       ondragstart="onDragStart(event,'${c.id}')">
       <div class="card-name">${c.name}</div>
-      <div class="card-meta">${c.city||'Las Vegas'} Â· ${c.estimated_employees ? c.estimated_employees.toLocaleString()+' emp' : 'â'}</div>
-      ${primary ? `<div class="card-meta" style="margin-top:3px">ð¤ ${primary.first_name||''} ${primary.last_name||''}</div>` : ''}
+      <div class="card-meta">${c.city||'Las Vegas'} · ${c.estimated_employees ? c.estimated_employees.toLocaleString()+' emp' : '—'}</div>
+      ${primary ? `<div class="card-meta" style="margin-top:3px">👤 ${primary.first_name||''} ${primary.last_name||''}</div>` : ''}
       <div class="card-tags">
         <span class="tag ${c.sector==='government'?'tag-gov':'tag-priv'}">${c.sector==='government'?'GOV':'PRIV'}</span>
         ${c.tier ? `<span class="tag tag-${c.tier.toLowerCase()}">${c.tier}</span>` : ''}
@@ -479,7 +479,7 @@ function companyCardHTML(c) {
     </div>`;
 }
 
-// ââ DRAG & DROP ââ
+// ── DRAG & DROP ──
 let dragId = null;
 function onDragStart(e, id) {
   dragId = id;
@@ -499,7 +499,7 @@ async function onDrop(e, col) {
   await loadCompanies();
 }
 
-// ââ COMPANIES TABLE ââ
+// ── COMPANIES TABLE ──
 function renderCompanyTable() {
   const search = (document.getElementById('search-input').value || '').toLowerCase();
   const stageF = document.getElementById('filter-stage').value;
@@ -528,12 +528,12 @@ function renderCompanyTable() {
         <div style="font-weight:700;color:#0d1b3e">${c.name}</div>
         ${c.website ? `<div style="font-size:11px;color:#3b82f6">${c.website}</div>` : ''}
       </td>
-      <td style="color:#374151">${c.industry||'â'}</td>
-      <td>${c.city||'â'}, ${c.state||'NV'}</td>
-      <td>${c.estimated_employees ? c.estimated_employees.toLocaleString() : 'â'}</td>
+      <td style="color:#374151">${c.industry||'—'}</td>
+      <td>${c.city||'—'}, ${c.state||'NV'}</td>
+      <td>${c.estimated_employees ? c.estimated_employees.toLocaleString() : '—'}</td>
       <td><span class="stage-badge badge-${c.stage}">${STAGES.find(s=>s.key===c.stage)?.label||c.stage}</span></td>
       <td><span class="tag ${c.sector==='government'?'tag-gov':'tag-priv'}">${c.sector==='government'?'Government':'Private'}</span></td>
-      <td style="font-weight:600">${c.tier||'â'}</td>
+      <td style="font-weight:600">${c.tier||'—'}</td>
     </tr>`).join('')
     : `<tr><td colspan="7" class="empty">No companies match your filters.</td></tr>`;
 }
@@ -551,7 +551,7 @@ function populateCityFilter() {
   sel.innerHTML = '<option value="">All Cities</option>' + cities.map(c => `<option value="${c}" ${c===cur?'selected':''}>${c}</option>`).join('');
 }
 
-// ââ DETAIL PANEL ââ
+// ── DETAIL PANEL ──
 async function openDetail(id) {
   currentCompanyId = id;
   const company = allCompanies.find(c => c.id === id);
@@ -559,7 +559,7 @@ async function openDetail(id) {
 
   document.getElementById('dp-name').textContent = company.name;
   document.getElementById('dp-meta').textContent =
-    `${company.industry||'â'} Â· ${company.city||'Las Vegas'}, ${company.state||'NV'} Â· ${company.estimated_employees ? company.estimated_employees.toLocaleString()+' employees' : 'â'}`;
+    `${company.industry||'—'} · ${company.city||'Las Vegas'}, ${company.state||'NV'} · ${company.estimated_employees ? company.estimated_employees.toLocaleString()+' employees' : '—'}`;
   document.getElementById('dp-notes').value = company.notes || '';
 
   // Stage selector buttons
@@ -572,12 +572,12 @@ async function openDetail(id) {
   document.getElementById('dp-contacts').innerHTML = contacts.length
     ? contacts.map(ct => `
         <div class="contact-card">
-          <div class="contact-name">${ct.first_name||''} ${ct.last_name||''}${ct.is_primary?' â­':''}</div>
-          <div class="contact-role">${ct.title||'â'}</div>
+          <div class="contact-name">${ct.first_name||''} ${ct.last_name||''}${ct.is_primary?' ⭐':''}</div>
+          <div class="contact-role">${ct.title||'—'}</div>
           <div class="contact-links">
-            ${ct.email ? `<a class="contact-link" href="mailto:${ct.email}">ð§ ${ct.email}</a>` : ''}
-            ${ct.phone ? `<a class="contact-link" href="tel:${ct.phone}">ð ${ct.phone}</a>` : ''}
-            ${ct.linkedin_url ? `<a class="contact-link" href="${ct.linkedin_url.startsWith('http')?ct.linkedin_url:'https://'+ct.linkedin_url}" target="_blank">ð¼ LinkedIn</a>` : ''}
+            ${ct.email ? `<a class="contact-link" href="mailto:${ct.email}">📧 ${ct.email}</a>` : ''}
+            ${ct.phone ? `<a class="contact-link" href="tel:${ct.phone}">📞 ${ct.phone}</a>` : ''}
+            ${ct.linkedin_url ? `<a class="contact-link" href="${ct.linkedin_url.startsWith('http')?ct.linkedin_url:'https://'+ct.linkedin_url}" target="_blank">💼 LinkedIn</a>` : ''}
           </div>
         </div>`).join('')
     : '<div class="empty">No contacts yet.</div>';
@@ -587,7 +587,7 @@ async function openDetail(id) {
   document.getElementById('dp-activities').innerHTML = (acts||[]).length
     ? (acts||[]).map(a => `
         <div class="activity-item">
-          <div class="act-icon">${ACT_ICONS[a.type]||'ð'}</div>
+          <div class="act-icon">${ACT_ICONS[a.type]||'📝'}</div>
           <div class="act-body">
             <div class="act-subject">${a.subject || a.type.replace(/_/g,' ')}</div>
             ${a.body ? `<div class="act-note-body">${a.body}</div>` : ''}
@@ -633,7 +633,7 @@ async function deleteCompany() {
   await loadCompanies();
 }
 
-// ââ MODALS ââ
+// ── MODALS ──
 function openAddCompany() { document.getElementById('modal-company').classList.add('open'); }
 function openAddContact() { document.getElementById('modal-contact').classList.add('open'); }
 function openLogActivity() {
@@ -708,7 +708,7 @@ async function saveActivity() {
   openDetail(currentCompanyId);
 }
 
-// ââ VIEW SWITCHING ââ
+// ── VIEW SWITCHING ──
 function switchView(view, tab) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -721,7 +721,7 @@ document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
-// ââ BOOT ââ
+// ── BOOT ──
 loadCompanies();
 </script>
 </body>
